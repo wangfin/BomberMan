@@ -26,8 +26,8 @@ public class PlayerService {
 
     public ResponseData doAction(RequestParam params) {
         ResponseData respData = new ResponseData();
-        respData.setMoveType(MoveType.values()[randomStrategy.getMoveType()].getValue());
-        respData.setReleaseBoom(ReleaseBoom.values()[randomStrategy.getReleaseBoom()].getValue());
+        respData.setMoveType(MoveType.values()[randomStrategy.getMoveType(params)].getValue());
+        respData.setReleaseBoom(ReleaseBoom.values()[randomStrategy.getReleaseBoom(params)].getValue());
         log.info("respData = {}", respData);
         return respData;
     }

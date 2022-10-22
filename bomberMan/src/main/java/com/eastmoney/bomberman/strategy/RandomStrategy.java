@@ -1,5 +1,6 @@
 package com.eastmoney.bomberman.strategy;
 
+import com.eastmoney.bomberman.model.RequestParam;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -14,12 +15,12 @@ public class RandomStrategy implements Strategy {
     private final Random random = new Random();
 
     @Override
-    public Integer getMoveType() {
+    public Integer getMoveType(RequestParam params) {
         return random.nextInt(5);
     }
 
     @Override
-    public Integer getReleaseBoom() {
+    public Integer getReleaseBoom(RequestParam params) {
         return random.nextInt(2);
     }
 
