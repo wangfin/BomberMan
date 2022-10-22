@@ -9,18 +9,24 @@ public enum MoveType {
     /**
      * 移动类型枚举
      */
-    LEFT(1),
-    TOP(2),
-    RIGHT(3),
-    DOWN(4),
-    STOP(5),
+    LEFT(0, "LEFT"),
+    TOP(1, "TOP"),
+    RIGHT(2, "RIGHT"),
+    DOWN(3, "DOWN"),
+    STOP(4, "STOP"),
 
     ;
 
     final Integer code;
+    final String value;
 
-    MoveType(Integer code) {
+    MoveType(Integer code, String value) {
         this.code = code;
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 
 }

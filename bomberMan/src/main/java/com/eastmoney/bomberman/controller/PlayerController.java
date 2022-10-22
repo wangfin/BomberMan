@@ -1,12 +1,12 @@
 package com.eastmoney.bomberman.controller;
 
+import com.eastmoney.bomberman.model.RequestParam;
+import com.eastmoney.bomberman.model.ResponseData;
 import com.eastmoney.bomberman.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * @author lifei
@@ -24,8 +24,8 @@ public class PlayerController {
     }
 
     @PostMapping("action")
-    public Map<String, Object> doAction(Map<String, Object> params) {
-        return playerService.doAction();
+    public ResponseData doAction(RequestParam params) {
+        return playerService.doAction(params);
     }
 
 }

@@ -1,36 +1,35 @@
 package com.eastmoney.bomberman.service;
 
+import com.eastmoney.bomberman.model.MoveType;
+import com.eastmoney.bomberman.model.ReleaseBoom;
+import com.eastmoney.bomberman.model.RequestParam;
+import com.eastmoney.bomberman.model.ResponseData;
+import com.eastmoney.bomberman.strategy.Strategy;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 /**
  * @author lifei
  * @date 2022/10/22
  */
+@Slf4j
 @Service
 public class PlayerService {
 
-    List<String> moveTypeList = new LinkedList<>();
-    List<Boolean> releaseBoomList = new LinkedList<>();
+    private Strategy randomStrategy;
 
-    static Random random = new Random();
-
-    public PlayerService() {
-        moveTypeList.add("LEFT");
-        moveTypeList.add("RIGHT");
-        moveTypeList.add("TOP");
-        moveTypeList.add("DOWN");
-        moveTypeList.add("STOP");
-        releaseBoomList.add(true);
-        releaseBoomList.add(false);
+    @Autowired
+    public void setRandomStrategy(Strategy randomStrategy) {
+        this.randomStrategy = randomStrategy;
     }
 
-    public Map<String, Object> doAction() {
-        Map<String, Object> retMap = new HashMap<>();
-        retMap.put("moveType", moveTypeList.get(random.nextInt(5)));
-        retMap.put("releaseBoom", releaseBoomList.get(random.nextInt(2)));
-        return retMap;
+    public ResponseData doAction(RequestParam params) {
+        ResponseData respData = new ResponseData();
+        respData.setMoveType(MoveType.values()[randomStrategy.getMoveType()].getValue());
+        respData.setReleaseBoom(ReleaseBoom.values()[randomStrategy.getReleaseBoom()].getValue());
+        log.info("respData = {}", respData);
+        return respData;
     }
 
 }
