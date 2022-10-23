@@ -13,6 +13,6 @@ public class RequestParam {
     private String selfNpcId;
     private Integer slefLocationX;
     private Integer slefLocationY;
-    private GameMapData gameMapData;
+    private GameMap gameMap;
 
 }

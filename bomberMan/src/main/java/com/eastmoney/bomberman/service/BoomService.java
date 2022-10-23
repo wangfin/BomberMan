@@ -1,8 +1,8 @@
 package com.eastmoney.bomberman.service;
 
-import com.eastmoney.bomberman.model.GameMapData;
+import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.RequestParam;
-import org.apache.catalina.LifecycleState;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * 判断是否放炸弹实现类
  */
+@Service
 public class BoomService {
 
     //策略开关
@@ -104,9 +105,9 @@ public class BoomService {
      * 判断是否超过数组范围 true 是 false 否
      */
     private Boolean isOver(RequestParam requestParam,int x,int y) {
-        GameMapData gameMapData = requestParam.getGameMapData();
-        int mapcols = gameMapData.getMapCols(); //行
-        int mapRows = gameMapData.getMapRows(); //列
+        GameMap gameMap = requestParam.getGameMap();
+        int mapcols = gameMap.getMapCols(); //行
+        int mapRows = gameMap.getMapRows(); //列
         if (x < 0 || x>= mapcols) {
             return true;
         }
@@ -120,7 +121,7 @@ public class BoomService {
      * 获取具体坐标的数值
      */
     private int getValue(RequestParam requestParam,int x,int y) {
-        List<List<String>> lists = requestParam.getGameMapData().getMapList();
+        List<List<String>> lists = requestParam.getGameMap().getMapList();
         List<String> list = lists.get(y);
         String s = list.get(x);
         return Integer.valueOf(s)/10;

@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2022/10/22
  */
 @Data
-public class GameMapData {
+public class GameMap {
 
     private Integer mapRows;
     private Integer mapCols;

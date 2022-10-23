@@ -1,6 +1,6 @@
 package com.eastmoney.bomberman.service;
 
-import com.eastmoney.bomberman.model.GameMapData;
+import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.MoveType;
 import com.eastmoney.bomberman.model.RequestParam;
 import com.eastmoney.bomberman.model.gamemap.BoomShortInfo;
@@ -34,7 +34,7 @@ public class MoveService {
         int selfLocationCol = params.getSlefLocationX() / 64;
 
         // 地图信息
-        GameMapData gameMapData = params.getGameMapData();
+        GameMap gameMap = params.getGameMap();
 
         // 1. 躲避自己的炸弹
 
@@ -45,7 +45,7 @@ public class MoveService {
         // 循环遍历目前角色所在位置周边的炸弹信息
         // 正上、正下、正左、正右
         // 左上、右上、左下、右下
-        List<BoomShortInfo> boomShortInfoList = gameMapData.getActiveBooms();
+        List<BoomShortInfo> boomShortInfoList = gameMap.getActiveBooms();
         for (BoomShortInfo boomShortInfo : boomShortInfoList) {
             // 正上，行数-1，列数=
             if (Objects.equals(boomShortInfo.getRow(), selfLocationRow - 1) &&
@@ -89,7 +89,7 @@ public class MoveService {
         }
 
         // 3. 躲避障碍物
-        List<List<String>> mapList = gameMapData.getMapList();
+        List<List<String>> mapList = gameMap.getMapList();
         // 不可破坏的障碍物，0开头
         // 正上，行数-1，列数=
         if (mapList.get(selfLocationRow - 1).get(selfLocationCol).charAt(0) == '0') {
@@ -125,14 +125,14 @@ public class MoveService {
         //首先确定可以走的方向：List<String>
         String bestMove = moves.get(0);
         double score = 0.0;
-        GameMapData gameMapData = params.getGameMapData();
+        GameMap gameMap = params.getGameMap();
         //将地图进行可走和不可走进行区分
-        List<List<String>> mapList = gameMapData.getMapList();
+        List<List<String>> mapList = gameMap.getMapList();
         List<int[]> canBrokenWall = new ArrayList<>();
-        int[][] map = new int[gameMapData.getMapRows()][gameMapData.getMapCols()];
-        int[][] map1 = new int[gameMapData.getMapRows()][gameMapData.getMapCols()];
-        for (int i = 0; i < gameMapData.getMapRows(); i++) {
-            for (int j = 0; j < gameMapData.getMapCols(); j++) {
+        int[][] map = new int[gameMap.getMapRows()][gameMap.getMapCols()];
+        int[][] map1 = new int[gameMap.getMapRows()][gameMap.getMapCols()];
+        for (int i = 0; i < gameMap.getMapRows(); i++) {
+            for (int j = 0; j < gameMap.getMapCols(); j++) {
                 int temp = Integer.valueOf(mapList.get(i).get(j));
                 int temp1;
                 if (temp < 10) {
@@ -167,7 +167,7 @@ public class MoveService {
     }
 
     private double getMoveScore(int[][] map, int[][] map1, RequestParam params, String move, List<int[]> canBrokenWall) {
-        GameMapData gameMap = params.getGameMapData();
+        GameMap gameMap = params.getGameMap();
         Integer slefLocationX = params.getSlefLocationX() / 64;
         Integer slefLocationY = params.getSlefLocationY() / 64;
         List<NpcShortInfo> activeNpcs = gameMap.getActiveNpcs();
