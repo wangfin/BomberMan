@@ -196,6 +196,7 @@ public class MoveService {
 
     private double getMagicBoxScore(int[][] map, List<MagicBoxShortInfo> activeMagicBoxes, Integer slefLocationX, Integer slefLocationY) {
         int distance = 0;
+        if(activeMagicBoxes.size() == 0) return distance;
         for (MagicBoxShortInfo activeMagicBox : activeMagicBoxes) {
             int[] temp = new int[2];
             temp[0] = activeMagicBox.getRow();
@@ -207,6 +208,7 @@ public class MoveService {
 
     private double getCanBrokenScore(int[][] map1, List<int[]> canBrokenWalls, Integer slefLocationX, Integer slefLocationY) {
         int distance = 0;
+        if(canBrokenWalls.size() == 0) return distance;
         for (int[] canBrokenWall : canBrokenWalls) {
             distance += getDistance(map1, canBrokenWall, slefLocationX, slefLocationY);
         }
@@ -215,6 +217,7 @@ public class MoveService {
 
     private double getNpcScore(int[][] map, List<NpcShortInfo> activeNpcs, Integer slefLocationX, Integer slefLocationY, String selfNpcId) {
         int distance = 0;
+        if(activeNpcs.size() == 0) return distance;
         for (NpcShortInfo activeNpc : activeNpcs) {
             if (activeNpc.getNpcId().equals(selfNpcId)) {
                 continue;
