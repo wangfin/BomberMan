@@ -4,7 +4,6 @@ import com.eastmoney.bomberman.model.RequestParam;
 import com.eastmoney.bomberman.model.ResponseData;
 import com.eastmoney.bomberman.service.BoomService;
 import com.eastmoney.bomberman.service.MoveService;
-import com.eastmoney.bomberman.strategy.RandomStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,7 @@ public class PlayController2 {
         put(4,"STOP");
     }};
 
-    @RequestMapping("/action")
+    @RequestMapping("/action1")
     public Object main(@RequestBody RequestParam requestParam) {
 
         ResponseData responseData = null;

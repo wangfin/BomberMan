@@ -1,5 +1,7 @@
 package com.eastmoney.bomberman.strategy;
 
+import com.eastmoney.bomberman.model.MoveType;
+import com.eastmoney.bomberman.model.ReleaseBoom;
 import com.eastmoney.bomberman.model.RequestParam;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +17,13 @@ public class RandomStrategy implements Strategy {
     private final Random random = new Random();
 
     @Override
-    public Integer getMoveType(RequestParam params) {
-        return random.nextInt(5);
+    public String getMoveType(RequestParam params) {
+        return MoveType.values()[random.nextInt(5)].getValue();
     }
 
     @Override
-    public Integer getReleaseBoom(RequestParam params) {
-        return random.nextInt(2);
+    public Boolean getReleaseBoom(RequestParam params) {
+        return ReleaseBoom.values()[random.nextInt(2)].getValue();
     }
 
 }
