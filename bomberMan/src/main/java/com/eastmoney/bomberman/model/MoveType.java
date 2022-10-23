@@ -29,8 +29,4 @@ public enum MoveType {
         return value;
     }
 
-    public Integer getCode(){
-        return code;
-    }
-
 }

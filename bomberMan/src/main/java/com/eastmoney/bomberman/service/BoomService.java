@@ -36,8 +36,8 @@ public class BoomService {
     public Boolean doService(String move, RequestParam requestParam) {
         int slefLocationX = requestParam.getSlefLocationX();
         int slefLocationY = requestParam.getSlefLocationY();
-        int x = slefLocationX/64 - 1;
-        int y = slefLocationY/64 - 1;
+        int x = slefLocationX/64;
+        int y = slefLocationY/64;
         //获取移动后位置
         switch (move) {
             case "RIGHT": {

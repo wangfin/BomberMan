@@ -80,7 +80,6 @@ public class MoveService {
                             Objects.equals(boomShortInfo.getCol(), selfLocationCol + 1))) {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
-
             // 左下，行数-1，列数-1；右下，行数+1，列数+1
             if (Objects.equals(boomShortInfo.getRow(), selfLocationRow + 1) &&
                     (Objects.equals(boomShortInfo.getCol(), selfLocationCol - 1) ||

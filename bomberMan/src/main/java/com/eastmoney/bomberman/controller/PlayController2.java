@@ -1,12 +1,10 @@
 package com.eastmoney.bomberman.controller;
 
-import com.eastmoney.bomberman.model.MoveType;
 import com.eastmoney.bomberman.model.RequestParam;
 import com.eastmoney.bomberman.model.ResponseData;
 import com.eastmoney.bomberman.service.BoomService;
 import com.eastmoney.bomberman.service.MoveService;
 import com.eastmoney.bomberman.strategy.RandomStrategy;
-import org.graalvm.compiler.debug.PathUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,9 +45,10 @@ public class PlayController2 {
             Random random = new Random();
             responseData.setMoveType(moveMap.get(random.nextInt(5)));
             responseData.setReleaseBoom(false);
+            System.out.println("error:" + responseData);
             return responseData;
         }
-
+        System.out.println(responseData);
         return responseData;
     }
 }
