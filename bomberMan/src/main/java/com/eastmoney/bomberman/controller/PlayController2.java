@@ -43,7 +43,7 @@ public class PlayController2 {
             responseData.setReleaseBoom(boom);
         } catch (Exception e) {
             e.printStackTrace();
-            RandomStrategy randomStrategy = new RandomStrategy();
+            responseData = new ResponseData();
             Random random = new Random();
             responseData.setMoveType(moveMap.get(random.nextInt(5)));
             responseData.setReleaseBoom(false);
