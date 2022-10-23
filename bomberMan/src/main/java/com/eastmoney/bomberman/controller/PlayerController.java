@@ -5,6 +5,7 @@ import com.eastmoney.bomberman.model.ResponseData;
 import com.eastmoney.bomberman.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,8 +24,8 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    @PostMapping("action1")
-    public ResponseData doAction(RequestParam params) {
+    @PostMapping("action")
+    public ResponseData doAction(@RequestBody RequestParam params) {
         return playerService.doAction(params);
     }
 
