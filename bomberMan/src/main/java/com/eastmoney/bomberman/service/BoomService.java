@@ -15,7 +15,7 @@ public class BoomService {
 
     //策略开关
     //九步没放直接放
-    private String strategy00 = "1";
+    private String strategy00 = "0";
     //摧毁障碍物
     private String strategy01 = "1";
     //靠近敌人放炸弹
@@ -89,7 +89,7 @@ public class BoomService {
             }
         }
         //如果靠近了敌人，放炸弹
-        if (strategy01.equals("2")) {
+        if (strategy02.equals("2")) {
             //遍历map判断敌人
             for (Integer key : map.keySet()) {
                 if (getValue(requestParam,key,map.get(key)) == 8){
