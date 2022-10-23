@@ -24,7 +24,7 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    @PostMapping("action")
+    @PostMapping("action1")
     public ResponseData doAction(@RequestBody RequestParam params) {
         return playerService.doAction(params);
     }

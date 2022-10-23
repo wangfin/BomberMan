@@ -30,7 +30,7 @@ public class PlayController2 {
         put(4,"STOP");
     }};
 
-    @RequestMapping("/action1")
+    @RequestMapping("/action")
     public Object main(@RequestBody RequestParam requestParam) {
 
         ResponseData responseData = null;

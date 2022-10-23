@@ -4,6 +4,7 @@ import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.MoveType;
 import com.eastmoney.bomberman.model.RequestParam;
 import com.eastmoney.bomberman.model.gamemap.BoomShortInfo;
+import com.eastmoney.bomberman.model.gamemap.ExplodeShortInfo;
 import com.eastmoney.bomberman.model.gamemap.MagicBoxShortInfo;
 import com.eastmoney.bomberman.model.gamemap.NpcShortInfo;
 import org.springframework.stereotype.Service;
@@ -68,42 +69,83 @@ public class MoveService {
         List<BoomShortInfo> boomShortInfoList = gameMap.getActiveBooms();
         for (BoomShortInfo boomShortInfo : boomShortInfoList) {
             // 正上，行数-1，列数=
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationX - 1) &&
-                    Objects.equals(boomShortInfo.getCol(), selfLocationY)) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
+                    Objects.equals(boomShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.TOP.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
             // 正下，行数+1，列数=
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationX + 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationY) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationY + 1))) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
+                    (Objects.equals(boomShortInfo.getCol(), selfLocationX))) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
             // 正左，列数-1，行数=
-            if (Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) &&
-                    Objects.equals(boomShortInfo.getRow(), selfLocationX)) {
+            if (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) &&
+                    Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
             // 正右，列数+1，行数=
-            if (Objects.equals(boomShortInfo.getCol(), selfLocationY + 1) &&
-                    Objects.equals(boomShortInfo.getRow(), selfLocationX)) {
+            if (Objects.equals(boomShortInfo.getCol(), selfLocationX + 1) &&
+                    Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
 
             // 左上，行数-1，列数-1；右上，行数-1，列数+1
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationX - 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationY + 1))) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
+                    (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
+                            Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
             // 左下，行数-1，列数-1；右下，行数+1，列数+1
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationX + 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationY + 1))) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
+                    (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
+                            Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
+                canMovesMap.remove(MoveType.DOWN.getValue());
+            }
+        }
+
+        // 4. 爆炸波判断
+        // TODO 爆炸波判断
+        List<ExplodeShortInfo> explodeShortInfoList = gameMap.getActiveExplodes();
+        for (ExplodeShortInfo explodeShortInfo : explodeShortInfoList) {
+            // 正上，行数-1，列数=
+            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+                    Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
+                canMovesMap.remove(MoveType.TOP.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
+            // 正下，行数+1，列数=
+            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+                    (Objects.equals(explodeShortInfo.getCol(), selfLocationX))) {
+                canMovesMap.remove(MoveType.DOWN.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
+            // 正左，列数-1，行数=
+            if (Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1) &&
+                    Objects.equals(explodeShortInfo.getRow(), selfLocationY)) {
+                canMovesMap.remove(MoveType.LEFT.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
+            // 正右，列数+1，行数=
+            if (Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1) &&
+                    Objects.equals(explodeShortInfo.getRow(), selfLocationY)) {
+                canMovesMap.remove(MoveType.RIGHT.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
+
+            // 左上，行数-1，列数-1；右上，行数-1，列数+1
+            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+                    (Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1) ||
+                            Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1))) {
+                canMovesMap.remove(MoveType.TOP.getValue());
+            }
+            // 左下，行数-1，列数-1；右下，行数+1，列数+1
+            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+                    (Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1) ||
+                            Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1))) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
         }
@@ -112,27 +154,31 @@ public class MoveService {
         List<List<String>> mapList = gameMap.getMapList();
         // 不可破坏的障碍物，0开头
         // 防止Map数组越界
-        if (!isOver(params, selfLocationX - 1, selfLocationY)) {
+        if (!isOver(params, selfLocationX, selfLocationY - 1)) {
             // 正上，行数-1，列数=
-            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '0') {
+            if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '0' ||
+                    mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
         }
-        if (!isOver(params, selfLocationX + 1, selfLocationY)) {
+        if (!isOver(params, selfLocationX, selfLocationY + 1)) {
             // 正下，行数+1，列数=
-            if (mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '0') {
+            if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '0' ||
+                    mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
         }
-        if (!isOver(params, selfLocationX, selfLocationY - 1)) {
+        if (!isOver(params, selfLocationX - 1, selfLocationY)) {
             // 正左，列数-1，行数=
-            if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '0') {
+            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '0' ||
+                    mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.LEFT.getValue());
             }
         }
-        if (!isOver(params, selfLocationX, selfLocationY + 1)) {
+        if (!isOver(params, selfLocationX + 1, selfLocationY)) {
             // 正右，列数+1，行数=
-            if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '0') {
+            if (mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '0' ||
+                    mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
             }
         }
@@ -266,7 +312,7 @@ public class MoveService {
     private int getDistance(int[][] map, int[] activeMagicBox, Integer slefLocationX, Integer slefLocationY) {
         int[][] lastPath = new int[map.length][map[0].length];
         lastPath[0][0] = map.length * map[0].length;
-        findMinWay(map, slefLocationX, slefLocationY, lastPath, 0, activeMagicBox);
+        findMinWay(map, slefLocationY, slefLocationX, lastPath, 0, activeMagicBox);
         return lastPath[0][0];
     }
 
