@@ -30,15 +30,35 @@ public class MoveService {
 
         // 自己所在位置的行列
         // row行数 col列数
-        int selfLocationRow = params.getSlefLocationY() / 64;
-        int selfLocationCol = params.getSlefLocationX() / 64;
+        // x列数 y行数
+        int selfLocationX = params.getSlefLocationX() / 64;
+        int selfLocationY = params.getSlefLocationY() / 64;
 
         // 地图信息
         GameMap gameMap = params.getGameMap();
 
-        // 1. 躲避自己的炸弹
+        // 1. 越界
+        // 判断上下左右四个方向是否越界
+        // 正上，行数-1，列数=
+        if (isOver(params, selfLocationX, selfLocationY - 1)) {
+            canMovesMap.remove(MoveType.TOP.getValue());
+        }
+        // 正下，行数+1，列数=
+        if (isOver(params, selfLocationX, selfLocationY + 1)) {
+            canMovesMap.remove(MoveType.DOWN.getValue());
+        }
+        // 正左，列数-1，行数=
+        if (isOver(params, selfLocationX - 1, selfLocationY)) {
+            canMovesMap.remove(MoveType.LEFT.getValue());
+        }
+        // 正右，列数+1，行数=
+        if (isOver(params, selfLocationX + 1, selfLocationY)) {
+            canMovesMap.remove(MoveType.RIGHT.getValue());
+        }
 
-        // 2. 躲避其他人的炸弹
+        // 2. 躲避自己的炸弹
+
+        // 3. 躲避其他人的炸弹
         // 当从输入中获取炸弹信息的时候，也就是敌人放下炸弹的第二回合，那么该炸弹会在第三回合，也就是下次爆炸
         // 所以见到炸弹直接逃跑即可
 
@@ -48,67 +68,73 @@ public class MoveService {
         List<BoomShortInfo> boomShortInfoList = gameMap.getActiveBooms();
         for (BoomShortInfo boomShortInfo : boomShortInfoList) {
             // 正上，行数-1，列数=
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationRow - 1) &&
-                    Objects.equals(boomShortInfo.getCol(), selfLocationCol)) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationX - 1) &&
+                    Objects.equals(boomShortInfo.getCol(), selfLocationY)) {
                 canMovesMap.remove(MoveType.TOP.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
             // 正下，行数+1，列数=
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationRow + 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationCol) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationCol - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationCol + 1))) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationX + 1) &&
+                    (Objects.equals(boomShortInfo.getCol(), selfLocationY) ||
+                            Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) ||
+                            Objects.equals(boomShortInfo.getCol(), selfLocationY + 1))) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
             // 正左，列数-1，行数=
-            if (Objects.equals(boomShortInfo.getCol(), selfLocationCol - 1) &&
-                    Objects.equals(boomShortInfo.getRow(), selfLocationRow)) {
+            if (Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) &&
+                    Objects.equals(boomShortInfo.getRow(), selfLocationX)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
             // 正右，列数+1，行数=
-            if (Objects.equals(boomShortInfo.getCol(), selfLocationCol + 1) &&
-                    Objects.equals(boomShortInfo.getRow(), selfLocationRow)) {
+            if (Objects.equals(boomShortInfo.getCol(), selfLocationY + 1) &&
+                    Objects.equals(boomShortInfo.getRow(), selfLocationX)) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
             }
 
             // 左上，行数-1，列数-1；右上，行数-1，列数+1
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationRow - 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationCol - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationCol + 1))) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationX - 1) &&
+                    (Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) ||
+                            Objects.equals(boomShortInfo.getCol(), selfLocationY + 1))) {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
             // 左下，行数-1，列数-1；右下，行数+1，列数+1
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationRow + 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationCol - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationCol + 1))) {
+            if (Objects.equals(boomShortInfo.getRow(), selfLocationX + 1) &&
+                    (Objects.equals(boomShortInfo.getCol(), selfLocationY - 1) ||
+                            Objects.equals(boomShortInfo.getCol(), selfLocationY + 1))) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
         }
 
-        // 3. 躲避障碍物
+        // 4. 躲避障碍物
         List<List<String>> mapList = gameMap.getMapList();
         // 不可破坏的障碍物，0开头
-        // 正上，行数-1，列数=
-        if (mapList.get(selfLocationRow - 1).get(selfLocationCol).charAt(0) == '0') {
-            canMovesMap.remove(MoveType.TOP.getValue());
+        // 防止Map数组越界
+        if (!isOver(params, selfLocationX - 1, selfLocationY)) {
+            // 正上，行数-1，列数=
+            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '0') {
+                canMovesMap.remove(MoveType.TOP.getValue());
+            }
         }
-
-        // 正下，行数+1，列数=
-        if (mapList.get(selfLocationRow + 1).get(selfLocationCol).charAt(0) == '0') {
-            canMovesMap.remove(MoveType.DOWN.getValue());
+        if (!isOver(params, selfLocationX + 1, selfLocationY)) {
+            // 正下，行数+1，列数=
+            if (mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '0') {
+                canMovesMap.remove(MoveType.DOWN.getValue());
+            }
         }
-
-        // 正左，列数-1，行数=
-        if (mapList.get(selfLocationRow).get(selfLocationCol - 1).charAt(0) == '0') {
-            canMovesMap.remove(MoveType.LEFT.getValue());
+        if (!isOver(params, selfLocationX, selfLocationY - 1)) {
+            // 正左，列数-1，行数=
+            if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '0') {
+                canMovesMap.remove(MoveType.LEFT.getValue());
+            }
         }
-
-        // 正右，列数+1，行数=
-        if (mapList.get(selfLocationRow).get(selfLocationCol + 1).charAt(0) == '0') {
-            canMovesMap.remove(MoveType.RIGHT.getValue());
+        if (!isOver(params, selfLocationX, selfLocationY + 1)) {
+            // 正右，列数+1，行数=
+            if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '0') {
+                canMovesMap.remove(MoveType.RIGHT.getValue());
+            }
         }
 
         return new ArrayList<>(canMovesMap.values());
@@ -196,7 +222,7 @@ public class MoveService {
 
     private double getMagicBoxScore(int[][] map, List<MagicBoxShortInfo> activeMagicBoxes, Integer slefLocationX, Integer slefLocationY) {
         int distance = 0;
-        if(activeMagicBoxes.size() == 0) return distance;
+        if (activeMagicBoxes.size() == 0) return distance;
         for (MagicBoxShortInfo activeMagicBox : activeMagicBoxes) {
             int[] temp = new int[2];
             temp[0] = activeMagicBox.getRow();
@@ -208,7 +234,7 @@ public class MoveService {
 
     private double getCanBrokenScore(int[][] map1, List<int[]> canBrokenWalls, Integer slefLocationX, Integer slefLocationY) {
         int distance = 0;
-        if(canBrokenWalls.size() == 0) return distance;
+        if (canBrokenWalls.size() == 0) return distance;
         for (int[] canBrokenWall : canBrokenWalls) {
             distance += getDistance(map1, canBrokenWall, slefLocationX, slefLocationY);
         }
@@ -217,7 +243,7 @@ public class MoveService {
 
     private double getNpcScore(int[][] map, List<NpcShortInfo> activeNpcs, Integer slefLocationX, Integer slefLocationY, String selfNpcId) {
         int distance = 0;
-        if(activeNpcs.size() == 0) return distance;
+        if (activeNpcs.size() == 0) return distance;
         for (NpcShortInfo activeNpc : activeNpcs) {
             if (activeNpc.getNpcId().equals(selfNpcId)) {
                 continue;
@@ -288,6 +314,22 @@ public class MoveService {
                 }
             }
         }
+    }
+
+    /**
+     * 判断是否超过数组范围 true 是 false 否
+     */
+    private Boolean isOver(RequestParam requestParam, int x, int y) {
+        GameMap gameMap = requestParam.getGameMap();
+        int mapcols = gameMap.getMapCols(); //行
+        int mapRows = gameMap.getMapRows(); //列
+        if (x < 0 || x >= mapcols) {
+            return true;
+        }
+        if (y < 0 || y >= mapRows) {
+            return true;
+        }
+        return false;
     }
 
 
