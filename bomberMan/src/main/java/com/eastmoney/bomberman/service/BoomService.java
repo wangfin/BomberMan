@@ -108,10 +108,10 @@ public class BoomService {
         GameMap gameMap = requestParam.getGameMap();
         int mapcols = gameMap.getMapCols(); //行
         int mapRows = gameMap.getMapRows(); //列
-        if (x < 0 || x>= mapcols) {
+        if (x < 0 || x >= mapRows) {
             return true;
         }
-        if (y < 0 || y>=mapRows) {
+        if (y < 0 || y >= mapcols) {
             return true;
         }
         return false;
