@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PlayerService {
-
-    private Strategy ourStrategy;
-
-    @Autowired
-    public void setRandomStrategy(Strategy ourStrategy) {
-        this.ourStrategy = ourStrategy;
-    }
-
-    public ResponseData doAction(RequestParam params) {
-        ResponseData respData = new ResponseData();
-        respData.setMoveType(ourStrategy.getMoveType(params));
-        respData.setReleaseBoom(ourStrategy.getReleaseBoom(params));
-        return respData;
-    }
+//
+//    private Strategy ourStrategy;
+//
+//    @Autowired
+//    public void setRandomStrategy(Strategy ourStrategy) {
+//        this.ourStrategy = ourStrategy;
+//    }
+//
+//    public ResponseData doAction(RequestParam params) {
+//        ResponseData respData = new ResponseData();
+//        respData.setMoveType(ourStrategy.getMoveType(params));
+//        respData.setReleaseBoom(ourStrategy.getReleaseBoom(params));
+//        return respData;
+//    }
 
 }

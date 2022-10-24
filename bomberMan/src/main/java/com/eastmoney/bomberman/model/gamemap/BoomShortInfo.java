@@ -14,4 +14,6 @@ public class BoomShortInfo {
     private Integer row;
     private Integer col;
 
+    public BoomShortInfo(BoomShortInfo boomShortInfo) {
+    }
 }

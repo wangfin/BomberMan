@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class PlayerAspect {
 
     @SneakyThrows
-    @Around(value = "execution(public * com.eastmoney.bomberman.service.PlayerService.doAction(*)) && args(params)")
+    @Around(value = "execution(public * com.eastmoney.bomberman.controller.PlayController2.main(*)) && args(params)")
     public Object aroundAction(ProceedingJoinPoint joinPoint, RequestParam params) {
         Constant.curIndex++;
         log.info("-------------------- 第 {} 次请求开始 --------------------", Constant.curIndex);

@@ -35,8 +35,8 @@ public class PlayController2 {
 
         ResponseData responseData = null;
         try {
-            String move = moveService.run(requestParam);
-            Boolean boom = boomService.doService(move,requestParam);
+            Boolean boom = boomService.doService(null,requestParam);
+            String move = moveService.run(boom,requestParam);
             responseData = new ResponseData();
             responseData.setMoveType(move);
             responseData.setReleaseBoom(boom);
