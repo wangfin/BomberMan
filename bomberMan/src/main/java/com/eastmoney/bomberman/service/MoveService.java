@@ -45,7 +45,7 @@ public class MoveService {
         // x列数 y行数
         int selfLocationX = params.getSlefLocationX() / 64;
         int selfLocationY = params.getSlefLocationY() / 64;
-
+        System.out.println("row:"+ selfLocationY + ";" + "col:" + selfLocationX);
         // 地图信息
         GameMap gameMap = params.getGameMap();
         List<List<String>> mapList = gameMap.getMapList();
@@ -386,6 +386,7 @@ public class MoveService {
 
         // 4. 爆炸波判断
         List<ExplodeShortInfo> explodeShortInfoList = gameMap.getActiveExplodes();
+        System.out.println(explodeShortInfoList);
         for (ExplodeShortInfo explodeShortInfo : explodeShortInfoList) {
             // 4.1 爆炸源在角色四角
             // 爆炸源在左上、右上；往上下走
