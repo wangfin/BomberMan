@@ -467,7 +467,7 @@ public class MoveService {
             if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
                     Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
                 // 覆盖范围只有1格，不能向左走或者停留
-                if (explodeShortInfo.getUp() == 1) {
+                if (explodeShortInfo.getRight() == 1) {
                     canMovesMap.remove(MoveType.LEFT.getValue());
                     canMovesMap.remove(MoveType.STOP.getValue());
                 }
@@ -477,7 +477,7 @@ public class MoveService {
             if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
                     Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
                 // 覆盖范围只有1格，不能向右走或者停留
-                if (explodeShortInfo.getUp() == 1) {
+                if (explodeShortInfo.getLeft() == 1) {
                     canMovesMap.remove(MoveType.RIGHT.getValue());
                     canMovesMap.remove(MoveType.STOP.getValue());
                 }
