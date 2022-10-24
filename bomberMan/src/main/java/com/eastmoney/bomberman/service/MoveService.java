@@ -32,6 +32,14 @@ public class MoveService {
         canMovesMap.put(MoveType.DOWN.getValue(), MoveType.DOWN.getValue());
         canMovesMap.put(MoveType.STOP.getValue(), MoveType.STOP.getValue());
 
+        // 如果实在是没地方可走了，那么就用这个
+        Map<String, String> maybeCanMovesMap = new HashMap<>();
+        maybeCanMovesMap.put(MoveType.LEFT.getValue(), MoveType.LEFT.getValue());
+        maybeCanMovesMap.put(MoveType.TOP.getValue(), MoveType.TOP.getValue());
+        maybeCanMovesMap.put(MoveType.RIGHT.getValue(), MoveType.RIGHT.getValue());
+        maybeCanMovesMap.put(MoveType.DOWN.getValue(), MoveType.DOWN.getValue());
+        maybeCanMovesMap.put(MoveType.STOP.getValue(), MoveType.STOP.getValue());
+
         // 自己所在位置的行列
         // row行数 col列数
         // x列数 y行数
@@ -47,18 +55,22 @@ public class MoveService {
         // 正上，行数-1，列数=
         if (isOver(params, selfLocationX, selfLocationY - 1)) {
             canMovesMap.remove(MoveType.TOP.getValue());
+            maybeCanMovesMap.remove(MoveType.TOP.getValue());
         }
         // 正下，行数+1，列数=
         if (isOver(params, selfLocationX, selfLocationY + 1)) {
             canMovesMap.remove(MoveType.DOWN.getValue());
+            maybeCanMovesMap.remove(MoveType.DOWN.getValue());
         }
         // 正左，列数-1，行数=
         if (isOver(params, selfLocationX - 1, selfLocationY)) {
             canMovesMap.remove(MoveType.LEFT.getValue());
+            maybeCanMovesMap.remove(MoveType.LEFT.getValue());
         }
         // 正右，列数+1，行数=
         if (isOver(params, selfLocationX + 1, selfLocationY)) {
             canMovesMap.remove(MoveType.RIGHT.getValue());
+            maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
         }
         System.out.println("越界" + new ArrayList<>(canMovesMap.values()));
 
@@ -68,10 +80,7 @@ public class MoveService {
         // 第N-1回合的炸弹信息会算到下面的炸弹信息
         // 第N-2回合的爆炸波会算到下面的爆炸波信息
 
-        // 2.1 本回合的炸弹，也就是第N回合
-
-        // BoomShortInfo boomShortInfo = myBoomHistory.get(curIndex);
-
+        // 如果本回合放炸弹了
         if (isBoom) {
             // 释放了炸弹，开始判断，我们当前就在炸弹点上
             // 且炸弹的上下左右也不能站，所以需要校验下个回合的位置，如果下下个回合还只能站在炸弹的上下左右，那么下回合这个方向就不能走
@@ -135,6 +144,9 @@ public class MoveService {
             if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
                 canMovesMap.remove(MoveType.TOP.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
+
+                maybeCanMovesMap.remove(MoveType.TOP.getValue());
+                maybeCanMovesMap.remove(MoveType.STOP.getValue());
             }
 
             // 2.2.2 这回合向下走 当前位置Y+1，当前位置 X，判断这个位置的下左右是否能走通（障碍物，可破坏的障碍物，炸弹的爆炸范围都不能走）
@@ -191,6 +203,9 @@ public class MoveService {
             if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
                 canMovesMap.remove(MoveType.DOWN.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
+
+                maybeCanMovesMap.remove(MoveType.DOWN.getValue());
+                maybeCanMovesMap.remove(MoveType.STOP.getValue());
             }
 
             // 2.2.3 这回合向左走 当前位置Y，当前位置 X - 1，判断这个位置的左上下是否能走通（障碍物，可破坏的障碍物，炸弹的爆炸范围都不能走）
@@ -247,6 +262,9 @@ public class MoveService {
             if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
+
+                maybeCanMovesMap.remove(MoveType.LEFT.getValue());
+                maybeCanMovesMap.remove(MoveType.STOP.getValue());
             }
 
             // 2.2.4 这回合向右走 当前位置Y，当前位置 X + 1，判断这个位置的右上下是否能走通（障碍物，可破坏的障碍物，炸弹的爆炸范围都不能走）
@@ -306,10 +324,12 @@ public class MoveService {
             if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 canMovesMap.remove(MoveType.STOP.getValue());
+
+                maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
+                maybeCanMovesMap.remove(MoveType.STOP.getValue());
             }
 
         }
-
         System.out.println("躲自己炸弹" + new ArrayList<>(canMovesMap.values()));
 
 
@@ -322,6 +342,8 @@ public class MoveService {
         // 左上、右上、左下、右下
         List<BoomShortInfo> boomShortInfoList = gameMap.getActiveBooms();
         for (BoomShortInfo boomShortInfo : boomShortInfoList) {
+            // 判断下是不是自己上个回合放的炸弹
+
             // 正上，行数-1，列数=
             if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
                     Objects.equals(boomShortInfo.getCol(), selfLocationX)) {
@@ -421,30 +443,20 @@ public class MoveService {
 
             // 4.2 爆炸源在角色正方向上
             // 正上方，爆炸波源的row = 当前位置Y-1；col = 当前位置的X
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 2) &&
                     Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
                 // 覆盖范围只有1格，不能向上走或者停留
                 if (explodeShortInfo.getDown() == 1) {
                     canMovesMap.remove(MoveType.TOP.getValue());
                     canMovesMap.remove(MoveType.STOP.getValue());
-                } else if (explodeShortInfo.getDown() > 1) {
-                    // 爆炸波超过1了，也不能往下走
-                    canMovesMap.remove(MoveType.TOP.getValue());
-                    canMovesMap.remove(MoveType.DOWN.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
                 }
             }
 
             // 正下方，爆炸波源的row = 当前位置Y+1；col = 当前位置的X
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 2) &&
                     Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
                 // 覆盖范围只有1格，不能向下走或者停留
                 if (explodeShortInfo.getUp() == 1) {
-                    canMovesMap.remove(MoveType.DOWN.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
-                } else if (explodeShortInfo.getUp() > 1) {
-                    // 爆炸波超过1了，也不能往上走
-                    canMovesMap.remove(MoveType.TOP.getValue());
                     canMovesMap.remove(MoveType.DOWN.getValue());
                     canMovesMap.remove(MoveType.STOP.getValue());
                 }
@@ -452,34 +464,23 @@ public class MoveService {
 
             // 正左方，爆炸波源的row = 当前位置Y；col = 当前位置的X - 1
             if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1)) {
+                    Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
                 // 覆盖范围只有1格，不能向左走或者停留
                 if (explodeShortInfo.getUp() == 1) {
                     canMovesMap.remove(MoveType.LEFT.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
-                } else if (explodeShortInfo.getUp() > 1) {
-                    // 爆炸波超过1了，也不能往右走
-                    canMovesMap.remove(MoveType.LEFT.getValue());
-                    canMovesMap.remove(MoveType.RIGHT.getValue());
                     canMovesMap.remove(MoveType.STOP.getValue());
                 }
             }
 
             // 正右方，爆炸波源的row = 当前位置Y；col = 当前位置的X + 1
             if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1)) {
+                    Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
                 // 覆盖范围只有1格，不能向右走或者停留
                 if (explodeShortInfo.getUp() == 1) {
                     canMovesMap.remove(MoveType.RIGHT.getValue());
                     canMovesMap.remove(MoveType.STOP.getValue());
-                } else if (explodeShortInfo.getUp() > 1) {
-                    // 爆炸波超过1了，也不能往左走
-                    canMovesMap.remove(MoveType.LEFT.getValue());
-                    canMovesMap.remove(MoveType.RIGHT.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
                 }
             }
-
         }
         System.out.println("躲爆炸波" + new ArrayList<>(canMovesMap.values()));
 
@@ -517,11 +518,11 @@ public class MoveService {
 
         System.out.println("躲障碍物" + new ArrayList<>(canMovesMap.values()));
 
-//        if (canMovesMap.size() == 0) {
-//            // 说明没有可以走的方向，先随机给一个吧
-//            // 这边只能选择从别人的爆炸波或者炸弹中间穿过
-//            canMovesMap.put(MoveType.RIGHT.getValue(), MoveType.RIGHT.getValue());
-//        }
+        if (canMovesMap.size() == 0) {
+            // 说明没有可以走的方向，先随机给一个吧
+            // 这边只能选择从别人的爆炸波或者炸弹中间穿过
+            canMovesMap.put(MoveType.RIGHT.getValue(), MoveType.RIGHT.getValue());
+        }
 
         return new ArrayList<>(canMovesMap.values());
     }
