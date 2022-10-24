@@ -1,6 +1,5 @@
 package com.eastmoney.bomberman.service;
 
-import com.eastmoney.bomberman.aspect.Constant;
 import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.MoveType;
 import com.eastmoney.bomberman.model.RequestParam;
@@ -12,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.eastmoney.bomberman.aspect.Constant.*;
+import static com.eastmoney.bomberman.aspect.Constant.curIndex;
+import static com.eastmoney.bomberman.aspect.Constant.myBoomHistory;
 
 @Service
 public class MoveService {
@@ -344,142 +344,226 @@ public class MoveService {
         for (BoomShortInfo boomShortInfo : boomShortInfoList) {
             // 判断下是不是自己上个回合放的炸弹
 
-            // 正上，行数-1，列数=
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
-                    Objects.equals(boomShortInfo.getCol(), selfLocationX)) {
-                canMovesMap.remove(MoveType.TOP.getValue());
-                canMovesMap.remove(MoveType.STOP.getValue());
-            }
-            // 正下，行数+1，列数=
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationX))) {
-                canMovesMap.remove(MoveType.DOWN.getValue());
-                canMovesMap.remove(MoveType.STOP.getValue());
-            }
-            // 正左，列数-1，行数=
-            if (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) &&
-                    Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
-                canMovesMap.remove(MoveType.LEFT.getValue());
-                canMovesMap.remove(MoveType.STOP.getValue());
-            }
-            // 正右，列数+1，行数=
-            if (Objects.equals(boomShortInfo.getCol(), selfLocationX + 1) &&
-                    Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
-                canMovesMap.remove(MoveType.RIGHT.getValue());
-                canMovesMap.remove(MoveType.STOP.getValue());
-            }
+            if (null != myBoomHistory.get(curIndex - 1) &&
+                    Objects.equals(boomShortInfo.getRow(), myBoomHistory.get(curIndex - 1).getRow()) &&
+                    Objects.equals(boomShortInfo.getCol(), myBoomHistory.get(curIndex - 1).getCol())){
+                // 正上，行数-1，列数=
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
+                        Objects.equals(boomShortInfo.getCol(), selfLocationX)) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.TOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.STOP.getValue());
+                }
+                // 正下，行数+1，列数=
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
+                        (Objects.equals(boomShortInfo.getCol(), selfLocationX))) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.DOWN.getValue());
+                    maybeCanMovesMap.remove(MoveType.STOP.getValue());
+                }
+                // 正左，列数-1，行数=
+                if (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) &&
+                        Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.LEFT.getValue());
+                    maybeCanMovesMap.remove(MoveType.STOP.getValue());
+                }
+                // 正右，列数+1，行数=
+                if (Objects.equals(boomShortInfo.getCol(), selfLocationX + 1) &&
+                        Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
+                    maybeCanMovesMap.remove(MoveType.STOP.getValue());
+                }
 
-            // 左上，行数-1，列数-1；右上，行数-1，列数+1
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
-                canMovesMap.remove(MoveType.TOP.getValue());
-            }
-            // 左下，行数-1，列数-1；右下，行数+1，列数+1
-            if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
-                    (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
-                            Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
-                canMovesMap.remove(MoveType.DOWN.getValue());
+                // 左上，行数-1，列数-1；右上，行数-1，列数+1
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
+                        (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
+                                Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.TOP.getValue());
+                }
+                // 左下，行数-1，列数-1；右下，行数+1，列数+1
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
+                        (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
+                                Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    maybeCanMovesMap.remove(MoveType.DOWN.getValue());
+                }
+            } else {
+                // 不是自己的炸弹，就嗯闯
+                // 正上，行数-1，列数=
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
+                        Objects.equals(boomShortInfo.getCol(), selfLocationX)) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                }
+                // 正下，行数+1，列数=
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
+                        (Objects.equals(boomShortInfo.getCol(), selfLocationX))) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                }
+                // 正左，列数-1，行数=
+                if (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) &&
+                        Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                }
+                // 正右，列数+1，行数=
+                if (Objects.equals(boomShortInfo.getCol(), selfLocationX + 1) &&
+                        Objects.equals(boomShortInfo.getRow(), selfLocationY)) {
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
+                    canMovesMap.remove(MoveType.STOP.getValue());
+                }
+
+                // 左上，行数-1，列数-1；右上，行数-1，列数+1
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
+                        (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
+                                Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                }
+                // 左下，行数-1，列数-1；右下，行数+1，列数+1
+                if (Objects.equals(boomShortInfo.getRow(), selfLocationY + 1) &&
+                        (Objects.equals(boomShortInfo.getCol(), selfLocationX - 1) ||
+                                Objects.equals(boomShortInfo.getCol(), selfLocationX + 1))) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                }
             }
         }
         System.out.println("躲别人炸弹" + new ArrayList<>(canMovesMap.values()));
 
         // 4. 爆炸波判断
         List<ExplodeShortInfo> explodeShortInfoList = gameMap.getActiveExplodes();
-        System.out.println(explodeShortInfoList);
         for (ExplodeShortInfo explodeShortInfo : explodeShortInfoList) {
-            // 4.1 爆炸源在角色四角
-            // 爆炸源在左上、右上；往上下走
-            // 爆炸源在左上，爆炸波源的row = 当前位置Y-1；col~当前位置的X~col+right
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
-                    (explodeShortInfo.getCol() < selfLocationX) &&
-                    (explodeShortInfo.getCol() + explodeShortInfo.getRight() >= selfLocationX)) {
-                canMovesMap.remove(MoveType.TOP.getValue());
-            }
-            // 爆炸源在右上，爆炸波源的row = 当前位置Y-1；col-left~当前位置的X~col
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
-                    (explodeShortInfo.getCol() > selfLocationX) &&
-                    (explodeShortInfo.getCol() - explodeShortInfo.getLeft() <= selfLocationX)) {
-                canMovesMap.remove(MoveType.TOP.getValue());
-            }
-            // 爆炸源在左下、右上；往上下走
-            // 爆炸源在左下，爆炸波源的row = 当前位置Y+1；col~当前位置的X~col+right
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
-                    (explodeShortInfo.getCol() < selfLocationX) &&
-                    (explodeShortInfo.getCol() + explodeShortInfo.getRight() >= selfLocationX)) {
-                canMovesMap.remove(MoveType.DOWN.getValue());
-            }
-            // 爆炸源在左下，爆炸波源的row = 当前位置Y+1；col-left~当前位置的X~col
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
-                    (explodeShortInfo.getCol() > selfLocationX) &&
-                    (explodeShortInfo.getCol() - explodeShortInfo.getLeft() <= selfLocationX)) {
-                canMovesMap.remove(MoveType.DOWN.getValue());
-            }
-            // 爆炸源在左上、右上；往左右走
-            // 爆炸源在左上，爆炸波源的col = 当前位置X-1；row~当前位置的Y~row+down
-            if (Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1) &&
-                    (explodeShortInfo.getRow() < selfLocationY) &&
-                    (explodeShortInfo.getRow() + explodeShortInfo.getDown() >= selfLocationY)) {
-                canMovesMap.remove(MoveType.LEFT.getValue());
-            }
-            // 爆炸源在右上，爆炸波源的col = 当前位置X+1；row~当前位置的Y~row+down
-            if (Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1) &&
-                    (explodeShortInfo.getRow() < selfLocationY) &&
-                    (explodeShortInfo.getRow() + explodeShortInfo.getDown() >= selfLocationY)) {
-                canMovesMap.remove(MoveType.RIGHT.getValue());
-            }
-            // 爆炸源在左下、右下；往左右走
-            // 爆炸源在左下，爆炸波源的col = 当前位置X-1；row-up~当前位置的Y~row
-            if (Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1) &&
-                    (explodeShortInfo.getRow() > selfLocationY) &&
-                    (explodeShortInfo.getRow() - explodeShortInfo.getUp() <= selfLocationX)) {
-                canMovesMap.remove(MoveType.LEFT.getValue());
-            }
-            // 爆炸源在右下，爆炸波源的col = 当前位置X+1；row-up~当前位置的Y~row
-            if (Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1) &&
-                    (explodeShortInfo.getRow() > selfLocationY) &&
-                    (explodeShortInfo.getRow() - explodeShortInfo.getUp() <= selfLocationY)) {
-                canMovesMap.remove(MoveType.RIGHT.getValue());
-            }
-
-            // 4.2 爆炸源在角色正方向上
-            // 正上方，爆炸波源的row = 当前位置Y-1；col = 当前位置的X
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 2) &&
-                    Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
-                // 覆盖范围只有1格，不能向上走或者停留
-                if (explodeShortInfo.getDown() == 1) {
+            // 判断是不是自己炸弹的爆炸波
+            if (null != myBoomHistory.get(curIndex - 2) &&
+                    Objects.equals(explodeShortInfo.getRow(), myBoomHistory.get(curIndex - 2).getRow()) &&
+                    Objects.equals(explodeShortInfo.getCol(), myBoomHistory.get(curIndex - 2).getCol())){
+                // 4.1 爆炸源在角色四角
+                // 爆炸源在左上、右上
+                // 爆炸源在左上，爆炸波源的row = 当前位置Y-1；col =当前位置的X-1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1)) {
                     canMovesMap.remove(MoveType.TOP.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
-                }
-            }
-
-            // 正下方，爆炸波源的row = 当前位置Y+1；col = 当前位置的X
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 2) &&
-                    Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
-                // 覆盖范围只有1格，不能向下走或者停留
-                if (explodeShortInfo.getUp() == 1) {
-                    canMovesMap.remove(MoveType.DOWN.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
-                }
-            }
-
-            // 正左方，爆炸波源的row = 当前位置Y；col = 当前位置的X - 1
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
-                // 覆盖范围只有1格，不能向左走或者停留
-                if (explodeShortInfo.getRight() == 1) {
                     canMovesMap.remove(MoveType.LEFT.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.TOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.LEFT.getValue());
                 }
-            }
-
-            // 正右方，爆炸波源的row = 当前位置Y；col = 当前位置的X + 1
-            if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
-                // 覆盖范围只有1格，不能向右走或者停留
-                if (explodeShortInfo.getLeft() == 1) {
+                // 爆炸源在右上，爆炸波源的row = 当前位置Y-1；col=当前位置的X+1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1)) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
                     canMovesMap.remove(MoveType.RIGHT.getValue());
-                    canMovesMap.remove(MoveType.STOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.TOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
+                }
+                // 爆炸源在左下、右下
+                // 爆炸源在左下，爆炸波源的row = 当前位置Y+1；col=当前位置的X-1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1)) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                    maybeCanMovesMap.remove(MoveType.DOWN.getValue());
+                    maybeCanMovesMap.remove(MoveType.LEFT.getValue());
+                }
+                // 爆炸源在右下，爆炸波源的row = 当前位置Y+1；col=当前位置的X+1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1)) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
+                    maybeCanMovesMap.remove(MoveType.DOWN.getValue());
+                    maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
+                }
+
+                // 4.2 爆炸源在角色正方向上
+                // 正上方，爆炸波源的row = 当前位置Y-1；col = 当前位置的X
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 2) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
+                    // 覆盖范围只有1格，不能向上走或者停留
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                    maybeCanMovesMap.remove(MoveType.TOP.getValue());
+                }
+                // 正下方，爆炸波源的row = 当前位置Y+1；col = 当前位置的X
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 2) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
+                    // 覆盖范围只有1格，不能向下走或者停留
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    maybeCanMovesMap.remove(MoveType.DOWN.getValue());
+                }
+                // 正左方，爆炸波源的row = 当前位置Y；col = 当前位置的X - 1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
+                    // 覆盖范围只有1格，不能向左走或者停留
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                    maybeCanMovesMap.remove(MoveType.LEFT.getValue());
+                }
+                // 正右方，爆炸波源的row = 当前位置Y；col = 当前位置的X + 1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
+                    // 覆盖范围只有1格，不能向右走或者停留
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
+                    maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
+                }
+
+            } else {
+                // 不是自己的
+                // 4.1 爆炸源在角色四角
+                // 爆炸源在左上、右上
+                // 爆炸源在左上，爆炸波源的row = 当前位置Y-1；col =当前位置的X-1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1)) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                }
+                // 爆炸源在右上，爆炸波源的row = 当前位置Y-1；col=当前位置的X+1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1)) {
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
+                }
+                // 爆炸源在左下、右下
+                // 爆炸源在左下，爆炸波源的row = 当前位置Y+1；col=当前位置的X-1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 1)) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                }
+                // 爆炸源在右下，爆炸波源的row = 当前位置Y+1；col=当前位置的X+1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 1) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 1)) {
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
+                }
+
+                // 4.2 爆炸源在角色正方向上
+                // 正上方，爆炸波源的row = 当前位置Y-1；col = 当前位置的X
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 2) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
+                    // 覆盖范围只有1格，不能向上走或者停留
+                    canMovesMap.remove(MoveType.TOP.getValue());
+                }
+                // 正下方，爆炸波源的row = 当前位置Y+1；col = 当前位置的X
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 2) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
+                    // 覆盖范围只有1格，不能向下走或者停留
+                    canMovesMap.remove(MoveType.DOWN.getValue());
+                }
+                // 正左方，爆炸波源的row = 当前位置Y；col = 当前位置的X - 1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
+                    // 覆盖范围只有1格，不能向左走或者停留
+                    canMovesMap.remove(MoveType.LEFT.getValue());
+                }
+                // 正右方，爆炸波源的row = 当前位置Y；col = 当前位置的X + 1
+                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
+                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
+                    // 覆盖范围只有1格，不能向右走或者停留
+                    canMovesMap.remove(MoveType.RIGHT.getValue());
                 }
             }
         }
@@ -493,6 +577,7 @@ public class MoveService {
             if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '0' ||
                     mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.TOP.getValue());
+                maybeCanMovesMap.remove(MoveType.TOP.getValue());
             }
         }
         if (!isOver(params, selfLocationX, selfLocationY + 1)) {
@@ -500,6 +585,7 @@ public class MoveService {
             if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '0' ||
                     mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.DOWN.getValue());
+                maybeCanMovesMap.remove(MoveType.DOWN.getValue());
             }
         }
         if (!isOver(params, selfLocationX - 1, selfLocationY)) {
@@ -507,6 +593,7 @@ public class MoveService {
             if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '0' ||
                     mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.LEFT.getValue());
+                maybeCanMovesMap.remove(MoveType.LEFT.getValue());
             }
         }
         if (!isOver(params, selfLocationX + 1, selfLocationY)) {
@@ -514,18 +601,18 @@ public class MoveService {
             if (mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '0' ||
                     mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
+                maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
             }
         }
-
         System.out.println("躲障碍物" + new ArrayList<>(canMovesMap.values()));
 
         if (canMovesMap.size() == 0) {
             // 说明没有可以走的方向，先随机给一个吧
             // 这边只能选择从别人的爆炸波或者炸弹中间穿过
-            canMovesMap.put(MoveType.RIGHT.getValue(), MoveType.RIGHT.getValue());
+            return new ArrayList<>(maybeCanMovesMap.values());
+        } else {
+            return new ArrayList<>(canMovesMap.values());
         }
-
-        return new ArrayList<>(canMovesMap.values());
     }
 
     /**
