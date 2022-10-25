@@ -571,9 +571,6 @@ public class MoveService {
                 canMovesMap.remove(MoveType.TOP.getValue());
                 maybeCanMovesMap.remove(MoveType.TOP.getValue());
             }
-            if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '8') {
-                canMovesMap.remove(MoveType.TOP.getValue());
-            }
         }
         if (!isOver(params, selfLocationX, selfLocationY + 1)) {
             // 正下，行数+1，列数=
@@ -581,9 +578,6 @@ public class MoveService {
                     mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.DOWN.getValue());
                 maybeCanMovesMap.remove(MoveType.DOWN.getValue());
-            }
-            if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '8') {
-                canMovesMap.remove(MoveType.DOWN.getValue());
             }
         }
         if (!isOver(params, selfLocationX - 1, selfLocationY)) {
@@ -593,9 +587,6 @@ public class MoveService {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 maybeCanMovesMap.remove(MoveType.LEFT.getValue());
             }
-            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '8') {
-                canMovesMap.remove(MoveType.LEFT.getValue());
-            }
         }
         if (!isOver(params, selfLocationX + 1, selfLocationY)) {
             // 正右，列数+1，行数=
@@ -603,9 +594,6 @@ public class MoveService {
                     mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
-            }
-            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '8') {
-                canMovesMap.remove(MoveType.RIGHT.getValue());
             }
         }
         log.info("躲障碍物" + new ArrayList<>(canMovesMap.values()));
