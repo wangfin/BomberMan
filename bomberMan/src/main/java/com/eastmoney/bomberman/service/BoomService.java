@@ -26,7 +26,7 @@ public class BoomService {
     //摧毁障碍物
     private String strategy01 = "1";
     //一步内炸敌人
-    private String strategy02 = "0";
+    private String strategy02 = "1";
     //如果附近有一个炸弹了，不放
     private String strategy03 = "1";
     //两步内炸敌人
