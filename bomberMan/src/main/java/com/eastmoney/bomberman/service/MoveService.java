@@ -783,7 +783,7 @@ public class MoveService {
             }
         }
         for (String move : moves) {
-            if (Constant.stopTimes == 4 && move.equals("STOP")) {
+            if (Constant.stopTimes == 3 && move.equals("STOP")) {
                 continue;
             }
             double scoreMove = getMoveScore(map, map1, params, move, canBrokenWall);
