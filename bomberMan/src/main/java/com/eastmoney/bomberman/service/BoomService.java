@@ -4,6 +4,7 @@ import com.eastmoney.bomberman.aspect.Constant;
 import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.RequestParam;
 import com.eastmoney.bomberman.model.gamemap.BoomShortInfo;
+import com.eastmoney.bomberman.model.gamemap.NpcShortInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +62,15 @@ public class BoomService {
                 return true;
             }
         }
-        BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
-        for (List<Integer> list : lists0) {
-            if (boomShortInfo.getCol() == list.get(0) && boomShortInfo.getRow() == list.get(1)){
-                log.info("执行了附近1格有炸弹不放策略");
-                return true;
+        if (Constant.curIndex > 0) {
+            BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
+            for (List<Integer> list : lists0) {
+                if (null != boomShortInfo){
+                    if (boomShortInfo.getCol() == list.get(0) && boomShortInfo.getRow() == list.get(1)){
+                        log.info("执行了附近1格有炸弹不放策略");
+                        return true;
+                    }
+                }
             }
         }
         //如果附件已经有一个炸弹，不放
@@ -89,21 +94,29 @@ public class BoomService {
         }
         //如果靠近了敌人，放炸弹 1 步
         if (strategy02.equals("1")) {
-            //遍历map判断敌人
-            for (List<Integer> list : lists) {
-                if (getValue(requestParam,list.get(0),list.get(1)) == '8'){
-                    log.info("执行了靠近敌人放炸弹策略");
-                    return true;
+            if (Constant.curIndex > 0) {
+                List<NpcShortInfo> npcShortInfos = requestParam.getGameMap().getActiveNpcs();
+                for (List<Integer> list : lists) {
+                    for (NpcShortInfo npcShortInfo : npcShortInfos) {
+                        if (npcShortInfo.getCol() == list.get(0) && npcShortInfo.getRow() == list.get(1)){
+                            log.info("执行了1步靠近敌人放炸弹策略");
+                            return true;
+                        }
+                    }
                 }
             }
         }
         //如果靠近了敌人，放炸弹 2 步
         if (strategy04.equals("1")) {
-            //遍历map判断敌人
-            for (List<Integer> list : lists2) {
-                if (getValue(requestParam,list.get(0),list.get(1)) == '8'){
-                    log.info("执行了2步靠近敌人放炸弹策略");
-                    return true;
+            if (Constant.curIndex > 0) {
+                List<NpcShortInfo> npcShortInfos = requestParam.getGameMap().getActiveNpcs();
+                for (List<Integer> list : lists2) {
+                    for (NpcShortInfo npcShortInfo : npcShortInfos) {
+                        if (npcShortInfo.getCol() == list.get(0) && npcShortInfo.getRow() == list.get(1)){
+                            log.info("执行了2步靠近敌人放炸弹策略");
+                            return true;
+                        }
+                    }
                 }
             }
         }
