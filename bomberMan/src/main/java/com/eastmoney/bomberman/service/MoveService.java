@@ -614,23 +614,27 @@ public class MoveService {
         List<NpcShortInfo> activeNpcList = gameMap.getActiveNpcs();
         for (NpcShortInfo npcShortInfo : activeNpcList) {
             // 正上，行数-1，列数=
-            if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) &&
+            if ((Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) ||
+                    Objects.equals(npcShortInfo.getRow(), selfLocationY - 2)) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
             // 正下，行数+1，列数=
-            if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 1) &&
+            if ((Objects.equals(npcShortInfo.getRow(), selfLocationY + 1) ||
+                    Objects.equals(npcShortInfo.getRow(), selfLocationY + 2)) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
             // 正左，列数-1，行数=
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)) {
+                    (Objects.equals(npcShortInfo.getCol(), selfLocationX - 1) ||
+                            Objects.equals(npcShortInfo.getCol(), selfLocationX - 2))) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
             }
             // 正右，列数+1，行数=
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)) {
+                    (Objects.equals(npcShortInfo.getCol(), selfLocationX + 1) ||
+                            Objects.equals(npcShortInfo.getCol(), selfLocationX + 2))) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
             }
             // 左上，x-1，y-1
