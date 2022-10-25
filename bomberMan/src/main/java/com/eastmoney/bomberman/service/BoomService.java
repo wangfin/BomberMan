@@ -68,7 +68,7 @@ public class BoomService {
                 if (null != boomShortInfo){
                     if (boomShortInfo.getCol() == list.get(0) && boomShortInfo.getRow() == list.get(1)){
                         log.info("执行了附近1格有炸弹不放策略");
-                        return true;
+                        return false;
                     }
                 }
             }
