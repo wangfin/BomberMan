@@ -1,5 +1,6 @@
 package com.eastmoney.bomberman.service;
 
+import com.eastmoney.bomberman.aspect.Constant;
 import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.MoveType;
 import com.eastmoney.bomberman.model.RequestParam;
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.eastmoney.bomberman.aspect.Constant.curIndex;
-import static com.eastmoney.bomberman.aspect.Constant.myBoomHistory;
+import static com.eastmoney.bomberman.aspect.Constant.*;
+
 @Slf4j
 @Service
 public class MoveService {
@@ -713,7 +714,7 @@ public class MoveService {
     public String bestMove(RequestParam params, List<String> moves) {
         //首先确定可以走的方向：List<String>
         if(moves.size()==0) return MoveType.values()[random.nextInt(5)].getValue();
-        String bestMove = moves.get(0);
+        String bestMove = "TOP";
         double score = 10000;
         GameMap gameMap = params.getGameMap();
         //将地图进行可走和不可走进行区分
@@ -753,15 +754,17 @@ public class MoveService {
             }
         }
         for (String move : moves) {
+            if(Constant.stopTimes == 4 && move.equals("STOP")){
+                continue;
+            }
             double scoreMove = getMoveScore(map, map1, params, move, canBrokenWall);
-            System.out.println(move +"："+ scoreMove);
+            log.info("移动方向：" + move + "的分数是:" + scoreMove);
             if (scoreMove < score) {
                 bestMove = move;
                 score = scoreMove;
             } else if (scoreMove == score) {
                 bestMove = random.nextInt(2)%2 == 1 ? move :bestMove;
             }
-            System.out.println(bestMove);
         }
         return bestMove;
     }
