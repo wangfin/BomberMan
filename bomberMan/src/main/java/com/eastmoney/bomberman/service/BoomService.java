@@ -63,7 +63,7 @@ public class BoomService {
                 return true;
             }
         }
-        if (Constant.curIndex > 1) {
+        if (Constant.curIndex > 0) {
             BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
             for (List<Integer> list : lists0) {
                 if (null != boomShortInfo){
@@ -76,7 +76,7 @@ public class BoomService {
         }
         //如果附件已经有一个炸弹，不放
         if (Constant.curIndex > 1) {
-            BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
+            BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 2);
             for (List<Integer> list : lists2) {
                 if (null != boomShortInfo){
                     if (boomShortInfo.getCol() == list.get(0) && boomShortInfo.getRow() == list.get(1)){
