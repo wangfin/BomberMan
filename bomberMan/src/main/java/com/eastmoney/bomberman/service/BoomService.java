@@ -50,6 +50,7 @@ public class BoomService {
         int x = slefLocationX/64;
         int y = slefLocationY/64;
         List<List<Integer>> lists0 = getLists0(requestParam,1,x,y);
+        List<List<Integer>> lists00 = getLists0(requestParam,2,x,y);
         //获取一步上下左右没有越界的坐标集合
         List<List<Integer>> lists = getLists(requestParam,1,x,y);
         List<List<Integer>> lists4 = getLists(requestParam,2,x,y);
@@ -62,7 +63,7 @@ public class BoomService {
                 return true;
             }
         }
-        if (Constant.curIndex > 0) {
+        if (Constant.curIndex > 1) {
             BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
             for (List<Integer> list : lists0) {
                 if (null != boomShortInfo){
@@ -74,11 +75,14 @@ public class BoomService {
             }
         }
         //如果附件已经有一个炸弹，不放
-        if (strategy03.equals("1")) {
+        if (Constant.curIndex > 1) {
+            BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
             for (List<Integer> list : lists2) {
-                if (getValue(requestParam,list.get(0),list.get(1)) == '9'){
-                    log.info("执行了附近2格有炸弹不放策略");
-                    return false;
+                if (null != boomShortInfo){
+                    if (boomShortInfo.getCol() == list.get(0) && boomShortInfo.getRow() == list.get(1)){
+                        log.info("执行了附近2格有炸弹不放策略");
+                        return false;
+                    }
                 }
             }
         }
