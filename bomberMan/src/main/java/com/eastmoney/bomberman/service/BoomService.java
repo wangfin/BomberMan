@@ -3,7 +3,6 @@ package com.eastmoney.bomberman.service;
 import com.eastmoney.bomberman.aspect.Constant;
 import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.RequestParam;
-import com.sun.xml.internal.fastinfoset.util.CharArray;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -48,37 +47,48 @@ public class BoomService {
         int slefLocationY = requestParam.getSlefLocationY();
         int x = slefLocationX/64;
         int y = slefLocationY/64;
+        List<List<Integer>> lists0 = getLists0(requestParam,1,x,y);
         //获取一步上下左右没有越界的坐标集合
         List<List<Integer>> lists = getLists(requestParam,1,x,y);
+        List<List<Integer>> lists4 = getLists(requestParam,2,x,y);
         //获取两步上下左右没有越界的坐标集合
-        List<List<Integer>> lists2 = getLists(requestParam,2,x,y);
+        List<List<Integer>> lists2 = getLists2(requestParam,2,x,y);
         //如果已经有九步没有放炸弹，直接放炸弹
         if (strategy00.equals("1")) {
-            if (Constant.noBoomTimes.equals(9)) {
+            if (Constant.noBoomTimes == 9) {
                 log.info("执行了十步必须放策略");
                 return true;
             }
         }
-        //如果靠近了可摧毁障碍物，放炸弹
-        if (strategy01.equals("1")) {
-            //遍历map判断可摧毁障碍物
-            for (List<Integer> list : lists) {
-                if (getValue(requestParam,list.get(0),list.get(1)) == '2'){
-                    log.info("执行了炸可摧毁障碍物策略");
-                    return true;
-                }
-            }
-        }
         //如果附件已经有一个炸弹，不放
         if (strategy03.equals("1")) {
-            for (List<Integer> list : lists) {
+            for (List<Integer> list : lists0) {
                 if (getValue(requestParam,list.get(0),list.get(1)) == '9'){
                     log.info("执行了附近有炸弹不放策略");
                     return false;
                 }
             }
         }
-        //如果靠近了敌人，放炸弹
+        //如果附件已经有一个炸弹，不放
+        if (strategy03.equals("1")) {
+            for (List<Integer> list : lists2) {
+                if (getValue(requestParam,list.get(0),list.get(1)) == '9'){
+                    log.info("执行了附近有炸弹不放策略");
+                    return false;
+                }
+            }
+        }
+        //如果靠近了可摧毁障碍物，放炸弹
+        if (strategy01.equals("1")) {
+            //遍历map判断可摧毁障碍物
+            for (List<Integer> list : lists0) {
+                if (getValue(requestParam,list.get(0),list.get(1)) == '2'){
+                    log.info("执行了炸可摧毁障碍物策略");
+                    return true;
+                }
+            }
+        }
+        //如果靠近了敌人，放炸弹 1 步
         if (strategy02.equals("1")) {
             //遍历map判断敌人
             for (List<Integer> list : lists) {
@@ -88,7 +98,7 @@ public class BoomService {
                 }
             }
         }
-        //如果靠近了敌人，放炸弹
+        //如果靠近了敌人，放炸弹 2 步
         if (strategy04.equals("1")) {
             //遍历map判断敌人
             for (List<Integer> list : lists2) {
@@ -101,10 +111,7 @@ public class BoomService {
         return false;
     }
 
-    /**
-     * 获取N步之内的上下左右坐标集合
-     */
-    private List<List<Integer>> getLists(RequestParam requestParam , int step ,int x,int y) {
+    private List<List<Integer>> getLists0(RequestParam requestParam , int step ,int x,int y) {
         List<List<Integer>> lists = new ArrayList<>(4);
         int s = 0;
         if (!isOver(requestParam,x-step,y)) {
@@ -119,9 +126,62 @@ public class BoomService {
             lists.get(s).add(y);
             s++;
         }
+
         if (!isOver(requestParam,x,y+step)) {
             lists.add(new ArrayList<Integer>());
             lists.get(s).add(x);
+            lists.get(s).add(y+step);
+            s++;
+        }
+
+        if (!isOver(requestParam,x,y-step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x);
+            lists.get(s).add(y-step);
+            s++;
+        }
+        return lists;
+    }
+
+    /**
+     * 获取N步之内的上下左右坐标集合 用于周身炸弹
+     */
+    private List<List<Integer>> getLists(RequestParam requestParam , int step ,int x,int y) {
+        List<List<Integer>> lists = new ArrayList<>(8);
+        int s = 0;
+        if (!isOver(requestParam,x-step,y)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x-step);
+            lists.get(s).add(y);
+            s++;
+        }
+        if (!isOver(requestParam,x-step,y-step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x-step);
+            lists.get(s).add(y-step);
+            s++;
+        }
+        if (!isOver(requestParam,x+step,y)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x+step);
+            lists.get(s).add(y);
+            s++;
+        }
+        if (!isOver(requestParam,x+step,y+step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x+step);
+            lists.get(s).add(y+step);
+            s++;
+        }
+        if (!isOver(requestParam,x,y+step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x);
+            lists.get(s).add(y+step);
+            s++;
+        }
+        if (!isOver(requestParam,x-step,y+step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x-step);
             lists.get(s).add(y+step);
             s++;
         }
@@ -129,6 +189,70 @@ public class BoomService {
             lists.add(new ArrayList<Integer>());
             lists.get(s).add(x);
             lists.get(s).add(y-step);
+            s++;
+        }
+        if (!isOver(requestParam,x+step,y-step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x+step);
+            lists.get(s).add(y-step);
+            s++;
+        }
+        return lists;
+    }
+
+    /**
+     * 获取N步之内的上下左右坐标集合 用于2步内敌人
+     */
+    private List<List<Integer>> getLists2(RequestParam requestParam ,int step ,int x,int y) {
+        List<List<Integer>> lists = new ArrayList<>(8);
+        int s = 0;
+        if (!isOver(requestParam,x-step,y)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x-step);
+            lists.get(s).add(y);
+            s++;
+        }
+        if (!isOver(requestParam,x-step+1,y-step+1)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x-step+1);
+            lists.get(s).add(y-step+1);
+            s++;
+        }
+        if (!isOver(requestParam,x+step,y)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x+step);
+            lists.get(s).add(y);
+            s++;
+        }
+        if (!isOver(requestParam,x+step-1,y+step-1)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x+step-1);
+            lists.get(s).add(y+step-1);
+            s++;
+        }
+        if (!isOver(requestParam,x,y+step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x);
+            lists.get(s).add(y+step);
+            s++;
+        }
+        if (!isOver(requestParam,x-step+1,y+step-1)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x-step+1);
+            lists.get(s).add(y+step-1);
+            s++;
+        }
+        if (!isOver(requestParam,x,y-step)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x);
+            lists.get(s).add(y-step);
+            s++;
+        }
+        if (!isOver(requestParam,x+step-1,y-step+1)) {
+            lists.add(new ArrayList<Integer>());
+            lists.get(s).add(x+step-1);
+            lists.get(s).add(y-step+1);
+            s++;
         }
         return lists;
     }
