@@ -610,29 +610,54 @@ public class MoveService {
         }
         log.info("躲障碍物" + new ArrayList<>(canMovesMap.values()));
 
+        Map<String, String> eludeEnemyMovesMap = new HashMap<>(canMovesMap);
         // 6. 躲避敌人
         List<NpcShortInfo> activeNpcList = gameMap.getActiveNpcs();
         for (NpcShortInfo npcShortInfo : activeNpcList) {
-            // 正上，行数-2，列数=
+            // 正上，行数-1，列数=
+            if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) &&
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
+                canMovesMap.remove(MoveType.TOP.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 2) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
-            // 正下，行数+2，列数=
+
+            // 正下，行数+1，列数=
+            if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 1) &&
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
+                canMovesMap.remove(MoveType.DOWN.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 2) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
-            // 正左，列数-2，行数=
+
+            // 正左，列数-1，行数=
+            if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)) {
+                canMovesMap.remove(MoveType.LEFT.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX - 2)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
             }
-            // 正右，列数+2，行数=
+
+            // 正右，列数+1，行数=
+            if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)) {
+                canMovesMap.remove(MoveType.RIGHT.getValue());
+                canMovesMap.remove(MoveType.STOP.getValue());
+            }
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX + 2)) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
             }
+
             // 左上，x-1，y-1
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) &&
                     Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)) {
@@ -661,13 +686,19 @@ public class MoveService {
         }
         log.info("躲敌人" + new ArrayList<>(canMovesMap.values()));
 
-        if (canMovesMap.size() == 0) {
-            // 说明没有可以走的方向，先随机给一个吧
-            // 这边只能选择从别人的爆炸波或者炸弹中间穿过
-            log.info("没有可选方向");
-            return new ArrayList<>(maybeCanMovesMap.values());
-        } else {
+        if (canMovesMap.size() != 0) {
+            // 可选方向不为空
             return new ArrayList<>(canMovesMap.values());
+        } else {
+            if (eludeEnemyMovesMap.size() != 0) {
+                // 说明因为躲避敌人造成没有可选方向
+                log.info("无法躲避敌人");
+                return new ArrayList<>(eludeEnemyMovesMap.values());
+            } else {
+                // 只能通过炸弹的方向
+                log.info("没有可选方向");
+                return new ArrayList<>(maybeCanMovesMap.values());
+            }
         }
     }
 
