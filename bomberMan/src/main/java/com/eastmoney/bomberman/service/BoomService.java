@@ -57,7 +57,7 @@ public class BoomService {
         List<List<Integer>> lists2 = getLists2(requestParam,2,x,y);
         //如果已经有九步没有放炸弹，直接放炸弹
         if (strategy00.equals("1")) {
-            if (Constant.noBoomTimes == 9) {
+            if (Constant.noBoomTimes == 8) {
                 log.info("执行了十步必须放策略");
                 return true;
             }
