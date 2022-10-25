@@ -14,5 +14,6 @@ public class RequestParam {
     private Integer slefLocationX;
     private Integer slefLocationY;
     private GameMap gameMap;
+    private String gameId;
 
 }

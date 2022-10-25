@@ -42,5 +42,6 @@ public class Constant {
     public static Integer stopTimes = 0;
     public static Integer noBoomTimes = 0;
     public static List<BoomShortInfo> myBoomHistory = new LinkedList<>();
+    public static String curGameId = "";
 
 }

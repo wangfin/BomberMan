@@ -13,6 +13,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedList;
+
 /**
  * @author lifei
  * @date 2022/10/23
@@ -26,12 +28,30 @@ public class PlayerAspect {
     @SneakyThrows
     @Around(value = "execution(public * com.eastmoney.bomberman.controller.PlayController2.main(*)) && args(params)")
     public Object aroundAction(ProceedingJoinPoint joinPoint, RequestParam params) {
+
+        if (!Constant.curGameId.equals(params.getGameId())) {
+            // 请求数据
+            Constant.reqHistory = new LinkedList<>();
+            // 当前场次
+            Constant.curIndex = -1;
+            Constant.curRow = -1;
+            Constant.curCol = -1;
+            Constant.curGameId = params.getGameId();
+            // 返回数据
+            Constant.respHistory = new LinkedList<>();
+            Constant.stopTimes = 0;
+            Constant.noBoomTimes = 0;
+            Constant.myBoomHistory = new LinkedList<>();
+        }
+
         Constant.curIndex++;
         log.info("-------------------- 第 {} 次请求开始 --------------------", Constant.curIndex);
 
         Constant.curRow = params.getSlefLocationY() / Constant.BLOCK_SIZE;
         Constant.curCol = params.getSlefLocationX() / Constant.BLOCK_SIZE;
         Constant.reqHistory.add(Constant.curIndex, params);
+
+        Long start = System.currentTimeMillis();
         log.info("请求数据 params = {}", params);
 
         Object result = joinPoint.proceed(joinPoint.getArgs());
@@ -60,7 +80,8 @@ public class PlayerAspect {
             // log.info("更新变量：我投放的炸弹位置 myBoomHistory = {}", Constant.myBoomHistory);
         }
 
-        // log.info("-------------------- 第 {} 次请求结束 --------------------", Constant.curIndex);
+        Long end = System.currentTimeMillis();
+        log.info("-------------------- 第 {} 次请求结束，耗时 {} 毫秒 --------------------", Constant.curIndex, end - start);
         return result;
     }
 
