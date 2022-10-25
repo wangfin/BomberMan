@@ -3,6 +3,7 @@ package com.eastmoney.bomberman.service;
 import com.eastmoney.bomberman.aspect.Constant;
 import com.eastmoney.bomberman.model.GameMap;
 import com.eastmoney.bomberman.model.RequestParam;
+import com.eastmoney.bomberman.model.gamemap.BoomShortInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -60,20 +61,18 @@ public class BoomService {
                 return true;
             }
         }
-        //如果附件已经有一个炸弹，不放
-        if (strategy03.equals("1")) {
-            for (List<Integer> list : lists0) {
-                if (getValue(requestParam,list.get(0),list.get(1)) == '9'){
-                    log.info("执行了附近有炸弹不放策略");
-                    return false;
-                }
+        BoomShortInfo boomShortInfo = Constant.myBoomHistory.get(Constant.curIndex - 1);
+        for (List<Integer> list : lists0) {
+            if (boomShortInfo.getCol() == list.get(0) && boomShortInfo.getRow() == list.get(1)){
+                log.info("执行了附近1格有炸弹不放策略");
+                return true;
             }
         }
         //如果附件已经有一个炸弹，不放
         if (strategy03.equals("1")) {
             for (List<Integer> list : lists2) {
                 if (getValue(requestParam,list.get(0),list.get(1)) == '9'){
-                    log.info("执行了附近有炸弹不放策略");
+                    log.info("执行了附近2格有炸弹不放策略");
                     return false;
                 }
             }
