@@ -74,7 +74,6 @@ public class MoveService {
             canMovesMap.remove(MoveType.RIGHT.getValue());
             maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
         }
-        System.out.println("越界" + new ArrayList<>(canMovesMap.values()));
 
         // 2. 躲避自己的炸弹
         // 第一回合放炸弹，第二回合无事发生，第三回合爆炸（爆炸波持续一回合）
@@ -84,7 +83,7 @@ public class MoveService {
 
         // 如果本回合放炸弹了
         if (isBoom) {
-            log.info("第 curIndex={} 回合，我们释放炸弹，炸弹位置 selfLocationY = {}, selfLocationX = {}", curIndex, selfLocationY, selfLocationX);
+            log.info("第 curIndex={} 回合，释放炸弹，炸弹位置 Y = {}, X = {}", curIndex, selfLocationY, selfLocationX);
             // 释放了炸弹，开始判断，我们当前就在炸弹点上
             // 且炸弹的上下左右也不能站，所以需要校验下个回合的位置，如果下下个回合还只能站在炸弹的上下左右，那么下回合这个方向就不能走
 
@@ -135,7 +134,7 @@ public class MoveService {
             // 障碍物
             if (!isOver(params, selfLocationX + 1, selfLocationY - 1)) {
                 if (mapList.get(selfLocationY - 1).get(selfLocationX + 1).charAt(0) == '0' ||
-                        mapList.get(selfLocationY - 1).get(selfLocationX + 1).charAt(0) == '2' ) {
+                        mapList.get(selfLocationY - 1).get(selfLocationX + 1).charAt(0) == '2') {
                     canThisWayMove.set(2, Boolean.FALSE);
                 }
             }
@@ -148,7 +147,7 @@ public class MoveService {
 //            }
 
             // 综合判断
-            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
+            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)) {
                 canMovesMap.remove(MoveType.TOP.getValue());
                 maybeCanMovesMap.remove(MoveType.TOP.getValue());
 
@@ -205,7 +204,7 @@ public class MoveService {
 //            }
 
             // 综合判断
-            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
+            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
                 maybeCanMovesMap.remove(MoveType.DOWN.getValue());
             }
@@ -261,7 +260,7 @@ public class MoveService {
 //            }
 
             // 综合判断
-            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
+            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 maybeCanMovesMap.remove(MoveType.LEFT.getValue());
             }
@@ -317,14 +316,13 @@ public class MoveService {
 //            }
 
             // 综合判断
-            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)){
+            if (!canThisWayMove.get(0) && !canThisWayMove.get(1) && !canThisWayMove.get(2)) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
             }
 
         }
-        System.out.println("躲自己炸弹" + new ArrayList<>(canMovesMap.values()));
-
+        log.info("躲自己炸弹" + new ArrayList<>(canMovesMap.values()));
 
         // 3. 躲避其他人的炸弹
         // 当从输入中获取炸弹信息的时候，也就是敌人放下炸弹的第二回合，那么该炸弹会在第三回合，也就是下次爆炸
@@ -334,12 +332,11 @@ public class MoveService {
         // 正上、正下、正左、正右
         // 左上、右上、左下、右下
         List<BoomShortInfo> boomShortInfoList = gameMap.getActiveBooms();
-        log.info("第 curIndex={} 回合，炸弹信息 boomShortInfoList = {}", curIndex, boomShortInfoList);
         for (BoomShortInfo boomShortInfo : boomShortInfoList) {
             // 判断下是不是自己上个回合放的炸弹
             if (null != myBoomHistory.get(curIndex - 1) &&
                     Objects.equals(boomShortInfo.getRow(), myBoomHistory.get(curIndex - 1).getRow()) &&
-                    Objects.equals(boomShortInfo.getCol(), myBoomHistory.get(curIndex - 1).getCol())){
+                    Objects.equals(boomShortInfo.getCol(), myBoomHistory.get(curIndex - 1).getCol())) {
 
                 // 正上，行数-1，列数=
                 if (Objects.equals(boomShortInfo.getRow(), selfLocationY - 1) &&
@@ -429,16 +426,16 @@ public class MoveService {
                 }
             }
         }
-        System.out.println("躲别人炸弹" + new ArrayList<>(canMovesMap.values()));
+        log.info("躲别人炸弹" + new ArrayList<>(canMovesMap.values()));
 
         // 4. 爆炸波判断
         List<ExplodeShortInfo> explodeShortInfoList = gameMap.getActiveExplodes();
-        log.info("第 curIndex={} 回合，爆炸波信息 explodeShortInfoList = {}", curIndex, explodeShortInfoList);
         for (ExplodeShortInfo explodeShortInfo : explodeShortInfoList) {
             // 判断是不是自己炸弹的爆炸波
             if (null != myBoomHistory.get(curIndex - 2) &&
                     Objects.equals(explodeShortInfo.getRow(), myBoomHistory.get(curIndex - 2).getRow()) &&
-                    Objects.equals(explodeShortInfo.getCol(), myBoomHistory.get(curIndex - 2).getCol())){
+                    Objects.equals(explodeShortInfo.getCol(), myBoomHistory.get(curIndex - 2).getCol())) {
+                log.info("第 curIndex={} 回合我们释放的炸弹，爆炸波信息 myBoomHistory = {}", curIndex - 2, myBoomHistory.get(curIndex - 2));
                 // 4.1 爆炸源在角色四角
                 // 爆炸源在左上、右上
                 // 爆炸源在左上，爆炸波源的row = 当前位置Y-1；col =当前位置的X-1
@@ -477,14 +474,14 @@ public class MoveService {
 
                 // 4.2 爆炸源在角色正方向上
                 // 正上方，爆炸波源的row = 当前位置Y-1；col = 当前位置的X
-                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 2) &&
+                if (Objects.equals(explodeShortInfo.getRow() + explodeShortInfo.getDown(), selfLocationY - 1) &&
                         Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
                     // 覆盖范围只有1格，不能向上走或者停留
                     canMovesMap.remove(MoveType.TOP.getValue());
                     maybeCanMovesMap.remove(MoveType.TOP.getValue());
                 }
                 // 正下方，爆炸波源的row = 当前位置Y+1；col = 当前位置的X
-                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 2) &&
+                if (Objects.equals(explodeShortInfo.getRow() - explodeShortInfo.getUp(), selfLocationY + 1) &&
                         Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
                     // 覆盖范围只有1格，不能向下走或者停留
                     canMovesMap.remove(MoveType.DOWN.getValue());
@@ -492,14 +489,14 @@ public class MoveService {
                 }
                 // 正左方，爆炸波源的row = 当前位置Y；col = 当前位置的X - 1
                 if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
+                        Objects.equals(explodeShortInfo.getCol() + explodeShortInfo.getRight(), selfLocationX - 1)) {
                     // 覆盖范围只有1格，不能向左走或者停留
                     canMovesMap.remove(MoveType.LEFT.getValue());
                     maybeCanMovesMap.remove(MoveType.LEFT.getValue());
                 }
                 // 正右方，爆炸波源的row = 当前位置Y；col = 当前位置的X + 1
                 if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
+                        Objects.equals(explodeShortInfo.getCol() - explodeShortInfo.getLeft(), selfLocationX + 1)) {
                     // 覆盖范围只有1格，不能向右走或者停留
                     canMovesMap.remove(MoveType.RIGHT.getValue());
                     maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
@@ -537,32 +534,32 @@ public class MoveService {
 
                 // 4.2 爆炸源在角色正方向上
                 // 正上方，爆炸波源的row = 当前位置Y-1；col = 当前位置的X
-                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY - 2) &&
+                if (Objects.equals(explodeShortInfo.getRow() + explodeShortInfo.getDown(), selfLocationY - 1) &&
                         Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
                     // 覆盖范围只有1格，不能向上走或者停留
                     canMovesMap.remove(MoveType.TOP.getValue());
                 }
                 // 正下方，爆炸波源的row = 当前位置Y+1；col = 当前位置的X
-                if (Objects.equals(explodeShortInfo.getRow(), selfLocationY + 2) &&
+                if (Objects.equals(explodeShortInfo.getRow() - explodeShortInfo.getUp(), selfLocationY + 1) &&
                         Objects.equals(explodeShortInfo.getCol(), selfLocationX)) {
                     // 覆盖范围只有1格，不能向下走或者停留
                     canMovesMap.remove(MoveType.DOWN.getValue());
                 }
                 // 正左方，爆炸波源的row = 当前位置Y；col = 当前位置的X - 1
                 if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                        Objects.equals(explodeShortInfo.getCol(), selfLocationX - 2)) {
+                        Objects.equals(explodeShortInfo.getCol() + explodeShortInfo.getRight(), selfLocationX - 1)) {
                     // 覆盖范围只有1格，不能向左走或者停留
                     canMovesMap.remove(MoveType.LEFT.getValue());
                 }
                 // 正右方，爆炸波源的row = 当前位置Y；col = 当前位置的X + 1
                 if (Objects.equals(explodeShortInfo.getRow(), selfLocationY) &&
-                        Objects.equals(explodeShortInfo.getCol(), selfLocationX + 2)) {
+                        Objects.equals(explodeShortInfo.getCol() - explodeShortInfo.getLeft(), selfLocationX + 1)) {
                     // 覆盖范围只有1格，不能向右走或者停留
                     canMovesMap.remove(MoveType.RIGHT.getValue());
                 }
             }
         }
-        System.out.println("躲爆炸波" + new ArrayList<>(canMovesMap.values()));
+        log.info("躲爆炸波" + new ArrayList<>(canMovesMap.values()));
 
         // 5. 躲避障碍物
         // 不可破坏的障碍物，0开头
@@ -574,18 +571,18 @@ public class MoveService {
                 canMovesMap.remove(MoveType.TOP.getValue());
                 maybeCanMovesMap.remove(MoveType.TOP.getValue());
             }
-            if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '8'){
+            if (mapList.get(selfLocationY - 1).get(selfLocationX).charAt(0) == '8') {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
         }
         if (!isOver(params, selfLocationX, selfLocationY + 1)) {
             // 正下，行数+1，列数=
             if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '0' ||
-                    mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '2' ) {
+                    mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.DOWN.getValue());
                 maybeCanMovesMap.remove(MoveType.DOWN.getValue());
             }
-            if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '8'){
+            if (mapList.get(selfLocationY + 1).get(selfLocationX).charAt(0) == '8') {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
         }
@@ -596,73 +593,73 @@ public class MoveService {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 maybeCanMovesMap.remove(MoveType.LEFT.getValue());
             }
-            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '8'){
+            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '8') {
                 canMovesMap.remove(MoveType.LEFT.getValue());
             }
         }
         if (!isOver(params, selfLocationX + 1, selfLocationY)) {
             // 正右，列数+1，行数=
             if (mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '0' ||
-                    mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '2' ) {
+                    mapList.get(selfLocationY).get(selfLocationX + 1).charAt(0) == '2') {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 maybeCanMovesMap.remove(MoveType.RIGHT.getValue());
             }
-            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '8'){
+            if (mapList.get(selfLocationY).get(selfLocationX - 1).charAt(0) == '8') {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
             }
         }
-        System.out.println("躲障碍物" + new ArrayList<>(canMovesMap.values()));
+        log.info("躲障碍物" + new ArrayList<>(canMovesMap.values()));
 
         // 6. 躲避敌人
         List<NpcShortInfo> activeNpcList = gameMap.getActiveNpcs();
-        for (NpcShortInfo npcShortInfo: activeNpcList){
+        for (NpcShortInfo npcShortInfo : activeNpcList) {
             // 正上，行数-2，列数=
-            if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX)){
+            if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 2) &&
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
             // 正下，行数+2，列数=
-            if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 1) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX)){
+            if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 2) &&
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX)) {
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
             // 正左，列数-2，行数=
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)){
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 2)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
             }
             // 正右，列数+2，行数=
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)){
-                canMovesMap.remove(MoveType.LEFT.getValue());
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 2)) {
+                canMovesMap.remove(MoveType.RIGHT.getValue());
             }
             // 左上，x-1，y-1
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)){
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
             // 右上，x+1，y-1
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY - 1) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)){
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 canMovesMap.remove(MoveType.TOP.getValue());
             }
             // 左下，x-1，y+1
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 1) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)){
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX - 1)) {
                 canMovesMap.remove(MoveType.LEFT.getValue());
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
             // 右下，x+1，y+1
             if (Objects.equals(npcShortInfo.getRow(), selfLocationY + 1) &&
-                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)){
+                    Objects.equals(npcShortInfo.getCol(), selfLocationX + 1)) {
                 canMovesMap.remove(MoveType.RIGHT.getValue());
                 canMovesMap.remove(MoveType.DOWN.getValue());
             }
 
         }
-        System.out.println("躲敌人" + new ArrayList<>(canMovesMap.values()));
+        log.info("躲敌人" + new ArrayList<>(canMovesMap.values()));
 
         if (canMovesMap.size() == 0) {
             // 说明没有可以走的方向，先随机给一个吧
@@ -711,9 +708,10 @@ public class MoveService {
      * @return
      */
     private final Random random = new Random();
+
     public String bestMove(RequestParam params, List<String> moves) {
         //首先确定可以走的方向：List<String>
-        if(moves.size()==0) return MoveType.values()[random.nextInt(5)].getValue();
+        if (moves.size() == 0) return MoveType.values()[random.nextInt(5)].getValue();
         String bestMove = "TOP";
         double score = 10000;
         GameMap gameMap = params.getGameMap();
@@ -726,10 +724,10 @@ public class MoveService {
             for (int j = 0; j < gameMap.getMapCols(); j++) {
                 int temp = Integer.valueOf(String.valueOf(mapList.get(i).get(j).charAt(0)));
                 int temp1 = 0;
-                if(temp == 0){
+                if (temp == 0) {
                     temp = 1;
                     temp1 = 1;
-                }else if (temp == 1) {
+                } else if (temp == 1) {
                     temp = 0;
                     temp1 = 0;
                 } else if (temp == 2) {
@@ -742,10 +740,10 @@ public class MoveService {
                 } else if (temp == 3) {
                     temp = 1;
                     temp1 = 0;
-                } else if (temp == 8){
+                } else if (temp == 8) {
                     temp = 0;
                     temp1 = 0;
-                }else if (temp == 9){
+                } else if (temp == 9) {
                     temp = 1;
                     temp1 = 1;
                 }
@@ -754,7 +752,7 @@ public class MoveService {
             }
         }
         for (String move : moves) {
-            if(Constant.stopTimes == 4 && move.equals("STOP")){
+            if (Constant.stopTimes == 4 && move.equals("STOP")) {
                 continue;
             }
             double scoreMove = getMoveScore(map, map1, params, move, canBrokenWall);
@@ -763,7 +761,7 @@ public class MoveService {
                 bestMove = move;
                 score = scoreMove;
             } else if (scoreMove == score) {
-                bestMove = random.nextInt(2)%2 == 1 ? move :bestMove;
+                bestMove = random.nextInt(2) % 2 == 1 ? move : bestMove;
             }
         }
         return bestMove;
@@ -789,7 +787,7 @@ public class MoveService {
         int[][] map3 = map;
         List<MagicBoxShortInfo> activeMagicBoxes = gameMap.getActiveMagicBoxes();
         double magicBoxScore = getMagicBoxScore(map2, activeMagicBoxes, slefLocationX, slefLocationY);
-        if(magicBoxScore <= 5){
+        if (magicBoxScore <= 5) {
             return magicBoxScore;
         }
         //广度优先搜索最近的可食用物，并据此获得得分
@@ -798,9 +796,9 @@ public class MoveService {
 //        double npcScore = getNpcScore(map3, activeNpcs, slefLocationX, slefLocationY, selfNpcId);
         double npcScore = 0;
 
-        if(activeMagicBoxes.size() == 0 && canBrokenWall.size()== 0){
-            boolean firstOne = isFirstOne(activeNpcs,selfNpcId);
-            if(!firstOne){
+        if (activeMagicBoxes.size() == 0 && canBrokenWall.size() == 0) {
+            boolean firstOne = isFirstOne(activeNpcs, selfNpcId);
+            if (!firstOne) {
                 npcScore = getNpcScore(map3, activeNpcs, slefLocationX, slefLocationY, selfNpcId);
                 return npcScore;
             }
@@ -814,7 +812,7 @@ public class MoveService {
         String firstId = "";
         for (NpcShortInfo activeNpc : activeNpcs) {
             int npcScore = Integer.valueOf(activeNpc.getScore());
-            if(npcScore > score){
+            if (npcScore > score) {
                 score = npcScore;
                 firstId = activeNpc.getNpcId();
             }
@@ -829,18 +827,18 @@ public class MoveService {
             int[] temp = new int[2];
             temp[0] = activeMagicBox.getRow();
             temp[1] = activeMagicBox.getCol();
-            distance = Math.min(getDistance(map, temp, slefLocationX, slefLocationY),distance);
+            distance = Math.min(getDistance(map, temp, slefLocationX, slefLocationY), distance);
         }
-        return distance  * 1;
+        return distance * 1;
     }
 
     private double getCanBrokenScore(int[][] map1, List<int[]> canBrokenWalls, Integer slefLocationX, Integer slefLocationY) {
         int distance = 5000;
         if (canBrokenWalls.size() == 0) return 1000;
         for (int[] canBrokenWall : canBrokenWalls) {
-            distance = Math.min(getDistance(map1, canBrokenWall, slefLocationX, slefLocationY),distance) ;
+            distance = Math.min(getDistance(map1, canBrokenWall, slefLocationX, slefLocationY), distance);
         }
-        return  distance  * 2;
+        return distance * 2;
     }
 
     private double getNpcScore(int[][] map, List<NpcShortInfo> activeNpcs, Integer slefLocationX, Integer slefLocationY, String selfNpcId) {
@@ -853,9 +851,9 @@ public class MoveService {
             int[] temp = new int[2];
             temp[0] = activeNpc.getRow();
             temp[1] = activeNpc.getCol();
-            distance = Math.min(getDistance(map, temp, slefLocationX, slefLocationY),distance);
+            distance = Math.min(getDistance(map, temp, slefLocationX, slefLocationY), distance);
         }
-        return  distance  * 10;
+        return distance * 10;
     }
 
     /**
@@ -941,7 +939,7 @@ public class MoveService {
      * @param params 入参
      * @return 最终前进的方向
      */
-    public String run(Boolean isBoom , RequestParam params) {
+    public String run(Boolean isBoom, RequestParam params) {
         List<String> moves = dontMove(isBoom, params);
         return bestMove(params, moves);
     }
