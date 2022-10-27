@@ -28,6 +28,9 @@ public class PlayerAspect {
     @SneakyThrows
     @Around(value = "execution(public * com.eastmoney.bomberman.controller.PlayController2.main(*)) && args(params)")
     public Object aroundAction(ProceedingJoinPoint joinPoint, RequestParam params) {
+        if (params == null || params.getGameId() == null || "".equals(params.getGameId())) {
+            return null;
+        }
 
         if (!Constant.curGameId.equals(params.getGameId())) {
             // 请求数据
